@@ -9,7 +9,7 @@ function App() {
       <div className='max-w-lg mx-auto space-y-7'>
         <h2 className='font-bold text-3xl'>Simple Carousel</h2>
         <SimpleCarousel>
-          {[...Array(10)].map((_, index) => {
+          {[...Array(15)].map((_, index) => {
             return (
               <div
                 key={index}

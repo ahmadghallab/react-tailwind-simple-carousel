@@ -18,6 +18,5 @@ export interface CarouselControlsProps {
 export interface CarouselArrowButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
-  icon: ReactNode;
   disabled: boolean;
 }

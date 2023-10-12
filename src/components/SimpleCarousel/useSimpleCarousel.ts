@@ -1,12 +1,12 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { CarouselDirectionEnum } from './types';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import debounce from '../../utils/debounce';
 import useLayout from '../../hooks/useLayout';
 
 const useSimpleCarousel = (carousel: React.RefObject<HTMLDivElement>) => {
   const { isRTL } = useLayout();
-  const maxScrollWidth = useRef(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [maxScrollWidth, setMaxScrollWidth] = useState(0);
+  const [offsetWidth, setOffsetWidth] = useState(0);
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -15,10 +15,7 @@ const useSimpleCarousel = (carousel: React.RefObject<HTMLDivElement>) => {
   };
 
   const handleNext = () => {
-    if (
-      carousel.current &&
-      carousel.current.offsetWidth * currentIndex <= maxScrollWidth.current
-    ) {
+    if (offsetWidth * currentIndex <= maxScrollWidth) {
       setCurrentIndex((prevState) => prevState + 1);
     }
   };
@@ -30,40 +27,31 @@ const useSimpleCarousel = (carousel: React.RefObject<HTMLDivElement>) => {
     }
   })
 
-  const isDisabled = (direction: CarouselDirectionEnum) => {
-    switch (direction) {
-      case CarouselDirectionEnum.PREV:
-        return currentIndex <= 0;
-      case CarouselDirectionEnum.NEXT:
-        if (carousel.current) {
-          return carousel.current.offsetWidth * currentIndex >= maxScrollWidth.current
-        }
-        return false
-      default:
-        return false
-    }
-  };
+  const isFirst = useMemo(() => {    
+    return currentIndex <= 0;
+  }, [currentIndex]);
 
+  const isLast = useMemo(() => {    
+    return offsetWidth * currentIndex >= maxScrollWidth
+  }, [currentIndex, maxScrollWidth, offsetWidth])
+  
   useEffect(() => {
     if (carousel.current) {
-      const scrollLeft = carousel.current.offsetWidth * currentIndex;
+      const scrollLeft = offsetWidth * currentIndex;
       carousel.current.scrollLeft = isRTL ? -scrollLeft : scrollLeft
     }
   }, [currentIndex]);
 
-  useEffect(() => {
-    maxScrollWidth.current = carousel.current
-      ? carousel.current.scrollWidth - carousel.current.offsetWidth
-      : 0;
-  }, []);
-
   useLayoutEffect(() => {
     window.addEventListener('resize', handleResize);
+    
+    setMaxScrollWidth(carousel.current.scrollWidth - carousel.current.offsetWidth)
+    setOffsetWidth(carousel.current.offsetWidth)
+    
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
-  return { handlePrev, handleNext, isDisabled };
+  return { handlePrev, handleNext, isFirst, isLast };
 };
 
 export default useSimpleCarousel;

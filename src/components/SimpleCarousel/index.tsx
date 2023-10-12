@@ -1,12 +1,14 @@
 import { Children, ReactNode, useMemo, useRef } from 'react';
 import useSimpleCarousel from './useSimpleCarousel';
-import CarouselControls from './CarouselControls';
 import { SimpleCarouselProps } from './types';
+import CarouselPrevButton from './CarouselPrevButton';
+import CarouselNextButton from './CarouselNextButton';
 
 function SimpleCarousel({ children }: SimpleCarouselProps) {
   const carousel = useRef(null);
 
-  const { handleNext, handlePrev, isDisabled } = useSimpleCarousel(carousel);
+  const { handleNext, handlePrev, isFirst, isLast } =
+    useSimpleCarousel(carousel);
 
   const itemList = useMemo(() => Children.toArray(children), [children]);
 
@@ -21,11 +23,10 @@ function SimpleCarousel({ children }: SimpleCarouselProps) {
         </div>
       </div>
 
-      <CarouselControls
-        handleNext={handleNext}
-        handlePrev={handlePrev}
-        isDisabled={isDisabled}
-      />
+      <div className='hidden lg:block'>
+        <CarouselPrevButton onClick={handlePrev} disabled={isFirst} />
+        <CarouselNextButton onClick={handleNext} disabled={isLast} />
+      </div>
     </div>
   );
 }
