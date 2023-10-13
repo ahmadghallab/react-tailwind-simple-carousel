@@ -6,7 +6,7 @@ function App() {
 
   return (
     <div className='p-4' dir={dir}>
-      <div className='max-w-lg mx-auto space-y-7'>
+      <div className='max-w-lg mx-auto space-y-7 lg:px-4'>
         <h2 className='font-bold text-3xl'>Simple Carousel</h2>
         <SimpleCarousel>
           {[...Array(15)].map((_, index) => {
